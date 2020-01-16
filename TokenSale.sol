@@ -9,17 +9,22 @@ interface IERC20 {
 */
 contract TokenSale {
     IERC20   public token;
-    address public owner;
+    address public  wallet;
     IERC20   public weth;  // can use 0xeA303aC199302F484847aBa40f4Eee3C6Ede49B6 on ropsten
 
-    constructor(IERC20 tokenForSale, IERC20 wethToReceive) public {
+    constructor(address tokenWallet, IERC20 tokenForSale, IERC20 wethToReceive) public {
+        require(wethToReceive != tokenForSale, "tokens should be different");
+        require(tokenWallet != address(0), "wallet cannot be zero");
+        require(address(tokenForSale) != address(0), "token address cannot be zero");
+        require(address(wethToReceive) != address(0), "weth address cannot be zero");
+
         token = tokenForSale;
         weth = wethToReceive;
-        owner = msg.sender;
+        wallet = tokenWallet;
     }
 
     function claimToken(uint amount) public {
-        weth.transferFrom(msg.sender, owner, amount);
-        token.transferFrom(owner, msg.sender, amount);
+        weth.transferFrom(msg.sender, wallet, amount);
+        token.transferFrom(wallet, msg.sender, amount);
     }
 }
